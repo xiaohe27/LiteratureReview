@@ -61,30 +61,37 @@ termination can always be guaranteed even if infinite cycles are present in the 
 
 The authors used concrete examples to show that for timed automata with infinite cycles,
 the algorithm for computing  proposed by Behrmann et al may not terminate. Then the authors analyzed 
-the underlying defects of Behrmann et al 's algorithm which caused the non-termination, and finally
+the underlying defects of Behrmann et al 's algorithm that caused the non-termination; and finally
 they provided a solution to the reported problem and proved its correctness. Generally speaking, 
 this paper presents their achievements gradually in a reasonable order so that it makes the readers
 tend to believe the authors' work really improve the state-of-the-art algorithm for computing BCET.
 
-At the beginning, the authors briefly introduced how the most model checking tools apply 
-extrapolation algorithms to guarantee termination of timed automata analysis. Then they 
-pointed out why these techniques cannot be directly used in some interesting problems such as BCET,
-and in this background, the authors naturally introduced Behrmann et al's algorithm (based on which
-the authors of this paper proposed the modification) for computing minimum execution time of TA (timed automata). 
-In the end of the first part, the authors identified the key difficulties of developing a solution
-to the minimum/maximum termination time problem using zone approach as: (1) adapting classical extrapolation
-operations to guarantee termination. (2) adapting classical canonicalization operation to keep information of
-extra clock accurate (the concept of extra clock was proposed by Behrmann et al which is not reset during 
-the analysis so that the total execution time of the automata can be precise). The summary of key difficulties
-and key contribution is concise but expressive. 
+The summary of key difficulties and key contribution in introduction part is concise but expressive. 
  
 There is a typo in the last paragraph of the introduction part: should be `The latter` instead of `The later`.
 
-The second part provided the basic definitions used in the paper. In this part, the authors also detailed how
-to implement clock zone concept using DBMs (difference bound matrices), so that infinitely many concrete states
-can be converted to a finitely many abstract states. Definition 6 abstracts the implementation of extrapolation
-function, which is good; but it also makes people raise a question: the canonicalization function is equally important,
-in fact, the naive implementation of canonicalization function is responsible for its non-termination in some  
+The extrapolation operation and canonicalization operation are mentioned again and again in the paper.
+The definition 6 abstracts the implementation of extrapolation function, which is good; but it also makes
+me raise a question: why there is no formal or informal definition for canonicalization function? 
+The canonicalization function is equally important, in fact, the naive implementation of canonicalization
+function is responsible for non-termination of Behrmann et al's algorithm in situations where infinite cycles
+exist.  Only some general description of the canonicalization operation is available until the real use case
+at the end of third part. I think it would be helpful for understanding if more noticeable explanation or
+examples of canonical operation are given.
+  
+A good point of this paper is it used quite a few diagrams to increase the readability, which can even make it
+easier for future internal reference. For example, in the third part, a matrix composed of dot sign (.) and
+asterisk sign (*) is presented to denote the general form of partial extrapolated matrix. This representation 
+makes very clear distinction between the "extra clock entries" that are not touched during extrapolation process
+, and the entries only involve automata clocks which may be extrapolated. Later in the paper, the entries with certain
+properties can be easily referenced by either "dot entries" or "asterisk entries", which is very concise.
+
+One description that really confused me is the formal definition of best-case execution time. 
+Definition 4 gave the formal representation of the best-case execution time of timed automata as 
+the greatest lower bound of the set which contains all the execution times for a given set of runs.
+This is easy to understand. But at the end of the paper where the Theorem 1 is given, it claims its algorithm for 
+best-case execution time computes the least upper bound on execution times. This seems inconsistent with 
+the previous definition of best-case execution time.
 
 
 </text>
