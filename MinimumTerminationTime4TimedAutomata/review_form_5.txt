@@ -61,7 +61,7 @@ termination can always be guaranteed even if infinite cycles are present in the 
 
 The authors used concrete examples to show that for timed automata with infinite cycles,
 the algorithm for computing  proposed by Behrmann et al may not terminate. Then the authors analyzed 
-the underlying defects of Behrmann et al 's algorithm that caused the non-termination; and finally
+the underlying defects of Behrmann et al's algorithm that caused the non-termination; and finally
 they provided a solution to the reported problem and proved its correctness. Generally speaking, 
 this paper presents their achievements gradually in a reasonable order so that it makes the readers
 tend to believe the authors' work really improve the state-of-the-art algorithm for computing BCET.
@@ -85,6 +85,19 @@ asterisk sign (*) is presented to denote the general form of partial extrapolate
 makes very clear distinction between the "extra clock entries" that are not touched during extrapolation process
 , and the entries only involve automata clocks which may be extrapolated. Later in the paper, the entries with certain
 properties can be easily referenced by either "dot entries" or "asterisk entries", which is very concise.
+
+In fifth part, technical details about how to modify extrapolation function and canonicalization function were given.
+The conditions C1 to C4 and lemma 3 in this part describe the major improvements achieved by the authors.
+
+Two major improvements/modification compared to Behrmann et al 's algorithm include:
+1: To keep the lower bound and upper bound of extra clock variable precise (vital for the accuracy of BCET and WCET),
+not only the extra clock variable, but also all the constraints that involve the extra clock variable should NOT
+be touched.
+ 
+2: Canonicalize dot entries in the matrix independently from the asterisk entries, i.e. 
+the asterisk entries will not participate in the process of canonicalizing the dot entries.
+This is important to avoid non-termination situation which occurs in the previous algorithm.
+
 
 One description that really confused me is the formal definition of best-case execution time. 
 Definition 4 gave the formal representation of the best-case execution time of timed automata as 
