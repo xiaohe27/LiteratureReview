@@ -32,7 +32,7 @@
   == -2 reject
   == -3 strong reject
   -->
-  2
+  1
 </score>
 <score id="226608" name="Reviewer's confidence">
 <!--
