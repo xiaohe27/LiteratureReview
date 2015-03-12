@@ -56,7 +56,7 @@
   == attachment..
   -->
 Summary:
-This paper reported a non-termination problem of Behrmann et al 's algorithm
+This paper reported a non-termination problem of Behrmann et al's algorithm
 for computing the minimum cost of reaching a goal state in priced timed
 automata. The authors used concrete examples to show that in certain
 circumstances, when infinite cycles exist, that algorithm may not terminate.
