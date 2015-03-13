@@ -60,15 +60,62 @@ This paper reported a non-termination problem of Behrmann et al 's algorithm
 for computing the minimum cost of reaching a goal state in priced timed
 automata. The authors used concrete examples to show that in certain
 circumstances, when infinite cycles exist, that algorithm may not terminate.
-It is then pointed out the problem was caused by a canonicalization mistake
-in the original algorithm. Finally, the authors proposed a modified algorithm,
-where termination can be guaranteed for any arbitrary timed automata.
+Finally, the authors proposed a modified algorithm, where termination can be
+guaranteed for any arbitrary timed automata.
+
+
+The authors clearly explain the concepts related to their work, and some
+import ones are informally described here (for later reference):
+1. Timed automata: a state in timed automata includes both location (like the
+state in classical automata) and a valuation function mapping clock variables 
+to non-negative real numbers. The best-case execution time (BCET) of running a
+timed automata is defined as the greatest lower bound of all possible execution
+times.
+
+2. Clock-Zones and Difference Bound Matrices (DBM): 
+Infinitely many concrete clock valuations of timed automata are converted to a
+finite number of clock-zones (implemented using DBM) with a certain upperbound,
+so that only a finite number of abstract states need to be explored when
+computing BCET.
+
+3. Extrapolation and Canonicalization operations:
+The extrapolation operation ensures the finiteness of abstract zones by setting
+the element of the matrix which exceeds the predefined boundary `M` to either
+infinity or `-M`; The finiteness of state-space is guaranteed by extrapolation
+operation. In contrast, the canonicalization operation ensures that the abstract
+zone has a unique representation by assigning the tightest possible bound to the
+difference of each pair of clocks.
+
+4. Extra clock delta : A special clock variable that never gets extrapolated
+   or reset.
 
 Strengths:
-*  Generally speaking, this paper presents their achievements gradually in a 
-reasonable order so that it makes the readers tend to believe the proposed new 
-extrapolation and canonicalization operations really improve the previous
-algorithm of computing BCET (best-case execution time). 
+*  Clearly explain how the original algorithm works, and exemplify why the
+original algorithm fails to terminate due to a canonicalization mistake: 
+suppose an automaton clock variable z is neither reset before entering an 
+infinite cycle nor inside the cycle, then we have a constraint that specifying
+z is equivalent to the extra clock variable delta. When z's value exceeds
+constant M, it gets extrapolated and becomes infinity. However, in the
+subsequent canonicalization process, the original algorithm wrongly involves the
+constraint `z = delta`; so that after canonicalization, z's upper bound will be
+shrunk to delta's, which is some big constant larger than M. As a result, in the
+later extrapolation process, z will be set to infinity again... This is precisely
+captured by the authors' description: "we will find ourselves dealing with real 
+zones rather than abstracted ones and hence the loop can be taken infinitely
+often enlarging the state space such that a fixed point will never be reached".
+
+
+*  Provide an easy yet effective solution for the non-termination problem of
+the original algorithm: adding 4 must-be-satisfied conditions to the original
+algorithm so that original extrapolation and canonicalization are replaced by
+partial extrapolation and specialized canonicalization. In the partial 
+extrapolation, not only the extra clock delta, but also all the constraints that
+involve delta will not be touched; What's more, in the modified algorithm, 
+canonicalization operations for the constraints that do not contain extra clock
+will be performed independently, without the participation of constraints that
+involve extra clock. Therefore, this special canonicalization mechanism does 
+solve the non-termination problem in the above example. 
+  
 
 *  Some diagram not only increases the readability, but also makes it
 easier for future internal reference. For example, in the third part,
@@ -78,19 +125,17 @@ makes very clear distinction between the "extra clock entries" that are not
 touched during extrapolation process, and the entries only involve automata
 clocks which may be extrapolated. Later in the paper, the entries with 
 certain properties can be easily referenced by either "dot entries" or
-"asterisk entries", which is very concise.
+"asterisk entries", which is both concise and expressive.
 
 Weaknesses:
-* Not enough experiments. At the end, the paper claims it can compute correctly
-the best-case execution time and terminates successfully when verifying the 
-three examples where the original algorithm cannot terminate. However, to make
-the results more convincing, more tests of different kinds are needed.
+* Not enough evaluation. It is claimed that there is a fast implementation of
+the proposed algorithm, which confirms the algorithm terminates and computes
+correct BCET for the three examples where infinite cycles exist. However, does
+the new algorithm also outperforms the old one when there is no infinite cycles?
+Whether the new algorithm achieves its always-termination feature at the cost
+of more overheads?
 
-* No evaluation. There is no evaluation part. It is a little unfair to only 
-compare the modified algorithm with original one in cases where infinite cycles
-exist. Does the new algorithm also outperform the old one when there is no
-infinite cycles? Whether the new algorithm achieves its always-termination
-feature at the cost of more overheads?
+*
 
 Some minor issues:
 The term 'canonicalization' occurs many times throughout the paper. 
