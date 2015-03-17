@@ -1,0 +1,280 @@
+Dear Grigore, 
+
+I read Jun Sun's review. 
+
+For number 5 item for his detailed comment, I have different opinion.
+
+He seems that not being persuaded by algorithm 3 and thinks it may not terminate.
+
+I don't agree with that. Condition C4 in the paper should solve the problem Jun Sun mentioned.
+
+Extrapolate the extra clock delta may make the algorithm fail to find the BCET even if there exists one 
+(if we underestimate the upper bound).
+
+According to my understanding, the algorithm will terminate in any situations.
+There are indeed infinite possible states for the DBM if we consider both the dot entries and asterisk entries in the matrix, 
+because the extra clock is not extrapolated.
+
+However, using the provided algorithm, I believe only a finite number of states are reachable from START and need to be explored.
+
+I think there are only two situations to be considered here: 
+1) BCET exists
+2) it does not exist
+
+In case 1, I think Dijkstra's algorithm will help it to find a BCET candidate which is a real number (not infinity) at some moment.
+
+Once it finds the first candidate, it will NOT add new states to WAIT set if they are not strictly better than the current candidate.
+
+And gradually the true BCET will be found, the searching will not go on forever because BCET is always >= 0 and we know when to stop.
+
+For case 2, at first glance, it seems that it may not terminate because BCET is always infinity and therefore every new states
+will continuously being added to WAIT set no matter how large its extra clock's value is (with time elapsed, extra clock becomes larger, but always less than infinity). 
+
+However, there is another condition filters out this unpleasant situation in the algorithm:
+notice that in the algorithm 3, in the line before the last return statement, 
+
+there is a special zone inclusion checking (see condition C4), which will be performed with respect to only automaton clocks (NOT including the extra clock).
+This prevents new states to be added to the WAIT set if its *dot entries* are contained in the *dot entries* of any visited states (the ones in PASSED set).
+
+Because the dot entries will be extrapolated (set to infinity when exceeding constant M etc.), and as a result, the states for the dot entries in the matrix 
+are finite. Therefore, eventually, every possible configuration for *dot entries* will be covered by some visited state in the PASSED set.
+And at that time, NO new states will be added to WAITING set, and therefore, the WAITING set will become smaller and smaller, until empty, and 
+then the algorithm terminates.
+
+Regards,
+He 
+
+
+________________________________________
+From: Rosu, Grigore
+Sent: Tuesday, March 17, 2015 8:41 AM
+To: Xiao, He
+Cc: Qingzhou Luo
+Subject: fm paper
+
+Guys, do you want to add anything to this discussion?
+
+Grigore
+
+
+Reviews and Comments on Paper 5
+Paper: Omar Bataineh and Mark Reynolds. Minimum Termination Time for Timed Automata Models with Infinite Cycles
+Conflict of Interest: Jim Woodcock
+File: FM_2015_submission_5.pdf
+Current decision:   (no decision)
+Summary of Received Reviews and Comments
+Reviews superseded by other reviews are shown in the grey color in the table. All times are GMT.
+date    PC member       subreviewer     Overall
+evaluation      Reviewer's
+confidence
+Review 1        Jan 26  Jun Sun         -1      4
+Review 2        Mar 11  Bernhard K. Aichernig   Florian Lorber  1       4
+Review 3        Mar 14  Grigore Rosu    He Xiao 1       3       (revise)
+Comment 1       Mar 15  Jun Sun
+Comment 2       Mar 15  Frank S.De Boer
+Comment 3       Mar 17  Bernhard K. Aichernig
+Comment 4       Mar 17  Jun Sun
+Review 1
+PC member:      Jun Sun
+Overall evaluation:     -1: (weak reject)
+Reviewer's confidence:  4: (high)
+Review: In this paper, the authors tackle the problem of calculating BCET and WCET of a system modeled in timed automata. The motivation is that the previously mentioned approach in [5] is informal and perhaps confusing. The proposed approach follows the same idea of [5], i.e., by adding a clock which is not extrapolated. The different is that a special "extrapolation" is used in order to make sure the value of the special clock is not extrapolated and its value won't affect other clocks during canonicalization. An algorithm is then presented to calculate BCET which is guaranteed to the terminating.
+
+I agree with the authors that indeed the description in [5] is a bit informal and vague. In that sense, this paper is motivated. The presentation of the paper is easy to follow, though can be improved at a few places (refer to detailed comments below). The technical details in the paper are sound. The contribution of the paper however is a bit weak overall. In general, BCET is not as useful as WCET in practice. The work documented in the paper only improve the implementation in UPPAAL for BCET - it would still not terminate for WCET calculation for the examples shown in the paper. Furthermore, though an implementation is briefly mentioned, there is no implementation details nor experiment results (on their claim that their BCET calculation is faster).
+
+The following are detailed comments.
+
+1. Def 1:
+The definition of TA seemed to a mix of timed Buchi automata and timed safety automata? In your setting, I don't think you want the Buchi acceptance condition and thus perhaps you should stick to timed safety automata.
+
+Also question is why there are no diagonal constraints? I suppose this is because the complication it introduces for extrapolation? It would make the paper more interesting though.
+
+In addition, the location invariants should be defined as downward closed constraints.
+
+2. Def 2: for action transitions, one condition is missing: the invariant I(l') must be satisfied.
+
+3. Section 2.2, the general form of a clock zone ... : clock x_0 is not yet relevant here.
+
+3. Page 6: "Note that canonicalization may be repeated three times at each step of the successor computation:" This is not precise. In fact, in tools like Uppaal or PAT (or perhaps RED), whole DBM
+canonicalization is often avoided completely.
+
+4. Section 4 should be integrated into Section 2.2.
+
+5. Algorithm 3, post_a is not properly defined. I suppose it is the standard zone based forward image operator plus the special canonicalization procedure. It seemed not straightforward to see why this algorithm is terminating (its partial correctness is intuitive). According to my understanding, you need at least extrapolate the upper bound on clock \detla (for instance, the standard extrapolation based on the maximum constant upper bound) to guarantee there are only finitely-many zones and therefore termination.
+Confidential remarks for the program committee:
+Time:   Jan 26, 10:06
+Review 2
+PC member:      Bernhard K. Aichernig
+Reviewer:       Florian Lorber <florber@ist.tugraz.at>
+Overall evaluation:     1: (weak accept)
+Reviewer's confidence:  4: (high)
+Review: Summary:
+The paper presents an updated version of the algorithm by Behrmann et al. for the calculation of best-case termination time of timed automata, fixing a problem in the original algorithm, where infinite loops could cause non-termination. The paper explains the original algorithm, gives some examples that demonstrate the problem and provides a new version that fixes it. The original algorithm is implemented in the tool UPPAAL, and the paper presents some examples that do not terminate in UPPAAL. The paper is shortened version of a chapter in a phd thesis.
+
+Relevance:
+The verification of real-time systems is a very relevant topic, and the calculation of best-case execution time and worst-case execution time are relevant sub-topics.
+
+Presentation:
+The paper is well structured and clearly written. It provides both, well-defined theory and illustrative examples.
+
+Contribution:
+The authors reveal the bug in the original algorithm and provide an updated algorithm, that can deal with infinite cycles.
+
+The biggest downside of the paper is the fact that the (quite similar and highly relevant) last publication of the authors [1] was not mentioned at all, thus the contribution of the new paper (handling infinite cycles?) compared to the old one is not defined. However, the revealed bug in the standard algorithm and consequently the handling of infinite cycles seem
+novel and would deserve publication.
+
+Soundness:
+The theory in the paper is formally defined. While some parts are proven within the paper, for other parts they only refer to the corresponding PhD thesis.
+
+Other remarks:
+In Definition 2, don't you need to add I(l') to the action transitions, making sure that the invariant of the target location is not violated after an action transition?
+
+You do not formally define BCET. Then for Figure 1 you say that the BCET is 20, which can not be correct, as the guard is "z>20" and not "z>=20". A formal definition of BCET (maybe with some epsilon) might solve that for you.
+
+Minor remarks:
+Page 6: Suppose we have an automaton A that we would like to compute its minimum and maximum termination time.
+=> Suppose we have an automaton A that we would like to compute its minimum and maximum termination time for.
+Page 10: any clock (if any). Since after executing => any clock (if any), since after executing
+Page 15: the model checker oppal [9] => the model checker opaal [9]
+
+[1]
+@incollection{
+year={2014},
+isbn={978-3-319-10511-6},
+booktitle={Formal Modeling and Analysis of Timed Systems},
+volume={8711},
+series={Lecture Notes in Computer Science},
+editor={Legay, Axel and Bozga, Marius},
+doi={10.1007/978-3-319-10512-3_4},
+title={Finding Best and Worst Case Execution Times of Systems Using Difference-Bound Matrices},
+url={http://dx.doi.org/10.1007/978-3-319-10512-3_4},
+publisher={Springer International Publishing},
+author={Al-Bataineh, Omar and Reynolds, Mark and French, Tim},
+pages={38-52},
+language={English}
+}
+Confidential remarks for the program committee:
+Time:   Mar 11, 09:24
+Review 3
+PC member:      Grigore Rosu
+Reviewer:       He Xiao <hexiao2@illinois.edu>
+Overall evaluation:     1: (weak accept)
+Reviewer's confidence:  3: (medium)
+Review: Summary:
+This paper reports a non-termination problem of Behrmann et al 's algorithm
+for computing the minimum cost of reaching a goal state in priced timed
+automata. The authors use concrete examples to show that in certain
+circumstances, when infinite cycles exist, that algorithm may not terminate.
+Then the authors propose a modified algorithm, where termination can be
+guaranteed for any arbitrary timed automata.
+
+Here are the main concepts The concepts are clearly explained in the paper
+
+1. Timed automata: a state in timed automata includes both location (like the
+state in classical automata) and a valuation function mapping clock variables
+to non-negative real numbers. The best-case execution time (BCET) of running a
+timed automata is defined as the greatest lower bound of all possible
+execution times.
+
+2. Clock-Zones and Difference Bound Matrices (DBM):
+Infinitely many concrete clock valuations of timed automata are converted
+to a finite number of clock-zones (implemented using DBM) with a certain
+upperbound, so that only a finite number of abstract states need to be
+explored when computing BCET.
+
+3. Extrapolation and Canonicalization operations:
+The extrapolation operation ensures the finiteness of abstract zones by
+setting the element of the matrix which exceeds the predefined boundary `M`
+to either infinity or `-M`. In contrast, the canonicalization operation
+ensures that the abstract zone has a unique representation by assigning the
+tightest possible bound to the difference of each pair of clocks.
+
+4. Extra clock delta : A special clock variable that never gets extrapolated
+or reset.
+
+Strengths:
+
+* Clearly explain how the original algorithm works, and exemplify why the
+original algorithm fails to terminate due to a canonicalization mistake:
+suppose an automaton clock variable z is neither reset before entering an
+infinite cycle nor inside the cycle; then we have a constraint that
+specifying z is equivalent to the extra clock variable delta. After
+some iterations when clock z's value exceeds constant M, it will be
+extrapolated and becomes infinity. However, in the subsequent
+canonicalization process, the original algorithm wrongly involves the
+constraint `z = delta`; so that after the canonicalization, z's upper bound
+will be shrunk to delta's, which is some big constant larger than M. As a
+result, in the later extrapolation process, z will be set to infinity
+again.
+
+* Provide an easy yet effective solution for the non-termination problem
+of the original algorithm: adding 4 must-be-satisfied conditions to the
+original algorithm so that original extrapolation and canonicalization are
+replaced by partial extrapolation and specialized canonicalization. In the
+partial extrapolation, not only the extra clock delta, but also all the
+constraints that involve delta will not be touched; moreover, in the
+modified algorithm, canonicalization operations for the constraints that do
+not contain the extra clock will be performed independently, without the
+participation of constraints that involve the extra clock. Therefore, it is
+clear that the special canonicalization mechanism does solve the
+non-termination problem in the above example.
+
+Weaknesses:
+
+* Weak evaluation. It is claimed that there is a fast implementation of
+the proposed algorithm, which verifies that the algorithm terminates and
+computes correct BCET for the three examples where infinite cycles exist.
+But how does the new algorithm compare with the old one? What if the new
+algorithm adds higher overheads?
+
+* Related work missing. Any other attempts to improve the base algorithm?
+
+Minor issues:
+
+* The term 'canonicalization' occurs many times throughout the paper.
+But no clear explanation or examples of it are given until Section 3.
+In contrast, the extrapolation operation is given a formal definition in
+Section 2.
+
+* The first half of the paper, which introduce background and the previous
+algorithm, feels verbose.
+
+* Theorem 1's claim that the algorithm for best-case execution time computes
+the least upper bound on execution times. This is inconsistent with the
+previous definition of best-case execution time in Section two.
+
+* Typo on page 2 (before Section 2): should be `The latter` instead of
+`The later`.
+Confidential remarks for the program committee:
+Time:   Mar 14, 17:05
+Comment 1
+PC member:      Jun Sun
+Comment:        It seemed that we have some gap here.
+
+From my point of view, the paper is not exciting as it only improves BCET calculation (which is not as useful as WCET) and the evaluation is rather weak (which doesn't really show how this is going to be useful for real problems).
+
+Having said that, if anyone is to campaign it, I will be happy to reconsider my stand.
+Time:   Mar 15, 01:32
+Comment 2
+PC member:      Frank S.De Boer
+Comment:        Who is?
+Time:   Mar 15, 12:48
+Comment 3
+PC member:      Bernhard K. Aichernig
+Comment:        Dear Jun Sun, what about the bug in the algorithm they discover, show that it is present in Uppaal and that they fix it? Is this worth a publication? I would say yes, but will not champion it, therefore a weak accept.
+Time:   Mar 17, 12:12
+Comment 4
+PC member:      Jun Sun
+Comment:        Dear Bernhard,
+
+The bug is indeed relevant, but I am not sure that itself is worth a full paper at FM. Plus, one perhaps would expect some implementation or evaluation for a paper like this.
+
+In short, I will not flight against acceptance if there is room; nor do I think it is a strong paper.
+
+I can revise my evaluation to borderline if necessary.
+Time:   Mar 17, 12:36
+ 
+ 
+	
+
+
